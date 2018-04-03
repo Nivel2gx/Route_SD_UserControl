@@ -1,0 +1,47 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <!-- Actual Action Bar -->
+    <include
+        layout="@layout/action_bar_tool_bar"
+        />
+
+    <!-- Map control will be created here. -->
+	<LinearLayout android:id="@+id/map_container" android:layout_width="fill_parent" android:layout_height="fill_parent" 
+	    android:orientation="horizontal" />
+
+    <com.artech.controls.TransparentPanel
+        android:id="@+id/detail_panel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:layout_below="@id/action_bar_toolbar"
+        android:orientation="horizontal"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp" >
+
+        <Button
+            android:id="@+id/OkButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/GX_BtnSelect" >
+        </Button>
+
+        <Button
+            android:id="@+id/CancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/GXM_cancel" >
+        </Button>
+
+        <TextView
+            android:id="@+id/selectedLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/GXM_TapMapToSelect" >
+        </TextView>
+    </com.artech.controls.TransparentPanel>
+</RelativeLayout>

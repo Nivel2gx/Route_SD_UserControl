@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\xml\\file_paths.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\994b448ea5267a5434f89a7d5e3368698a959b02\\output\\res\\xml\\file_paths.xml"
+    },
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\xml\\searchablebox.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\994b448ea5267a5434f89a7d5e3368698a959b02\\output\\res\\xml\\searchablebox.xml"
+    },
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\xml\\searchable.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\994b448ea5267a5434f89a7d5e3368698a959b02\\output\\res\\xml\\searchable.xml"
+    },
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\xml\\shared_files.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\994b448ea5267a5434f89a7d5e3368698a959b02\\output\\res\\xml\\shared_files.xml"
+    }
+]

@@ -1,0 +1,512 @@
+package com.example.samplemodule;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Color;
+import android.hardware.GeomagneticField;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.location.Location;
+import android.os.Bundle;
+import android.util.Log;
+import android.util.Pair;
+import android.view.View;
+import android.widget.Toast;
+
+import com.artech.activities.ActivityHelper;
+import com.artech.android.WithPermission;
+import com.akexorcist.googledirection.DirectionCallback;
+import com.akexorcist.googledirection.GoogleDirection;
+import com.akexorcist.googledirection.constant.AvoidType;
+import com.akexorcist.googledirection.model.Direction;
+import com.akexorcist.googledirection.model.Route;
+import com.akexorcist.googledirection.util.DirectionConverter;
+import com.artech.android.api.GeoLocationAPI;
+import com.artech.android.api.LocationHelper;
+import com.artech.base.controls.IGxControlRuntime;
+import com.artech.base.metadata.ActionDefinition;
+import com.artech.base.metadata.ActionParameter;
+import com.artech.base.metadata.layout.GridDefinition;
+import com.artech.base.metadata.layout.LayoutItemDefinition;
+import com.artech.base.model.Entity;
+import com.artech.base.model.EntityList;
+import com.artech.base.services.Services;
+import com.artech.base.utils.GeoFormats;
+import com.artech.controllers.ViewData;
+import com.artech.controls.grids.GridAdapter;
+import com.artech.controls.grids.GridHelper;
+import com.artech.controls.maps.GxMapViewDefinition;
+import com.artech.controls.maps.common.IGxMapView;
+import com.artech.controls.maps.common.MapItemViewHelper;
+import com.artech.externalapi.ExternalApi;
+import com.artech.ui.Coordinator;
+import com.example.genexusmodule.R;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import static android.content.Context.SENSOR_SERVICE;
+//import android.provider.Settings;
+
+@SuppressLint("ViewConstructor")
+public class BasicUserControl extends MapView implements IGxControlRuntime, IGxMapView, SensorEventListener,LocationListener {
+
+final static String NAME = "BasicUserControl";
+	private final static String METHOD_SET_NAME = "routepoint";
+	private final static String EVENT_ON_TAP = "OnTap";
+	private float currentDegree = 0f;
+
+	private LatLngBounds bounds = null;
+	private final Coordinator mCoordinator;
+	private final GxMapViewDefinition mDefinition;
+	private boolean mIsAnimatedRunning = false;
+	//private final LayoutItemDefinition mDefinition;
+
+	private final SensorManager mSensorManager;
+	private final Sensor mAccelerometer;
+	private final Sensor magnetometer;
+
+	private boolean mIsReady;
+	private boolean mOnResumeInvoked;
+
+	private GridHelper mHelper;
+	private GridAdapter mAdapter;
+	private MapItemViewHelper mItemViewHelper;
+
+	private ViewData mPendingUpdate;
+	private CameraUpdate mPendingCameraUpdate;
+
+	private String mName;
+	private int tapCount;
+	GoogleMap mMap = null;
+
+    //APUNTAR AL NORTE
+	float mDeclination;
+    float[] mRotationMatrix = new float[9];
+	float [] mGeomagneticMatrix =  new float[9];
+
+	float [] mGravity;
+	float [] mGeomagnetic;
+	float [] mGravity2;
+	float [] mGeomagnetic2;
+	boolean success;
+
+	LatLng startPointLatLong;
+	LatLng endPointLatLong;
+	private String PropertyGridVariableName;
+	String PropertyApiKey;
+	String PropertyMyLocation;
+
+	private final static int ITEM_VIEW_WIDTH_MARGIN = 20; // dips
+	private final static int MARKER_CAMERA_ANIMATION_DURATION = 500; // ms
+	static final int CAMERA_MARGIN_DIPS = 40;
+
+	@SuppressWarnings("UnusedParameters")
+	public BasicUserControl(Context context, Coordinator coordinator, LayoutItemDefinition definition){
+		super(context, new GoogleMapOptions() );
+		Log.e("UC:"," Antes que nada");
+		mCoordinator = coordinator;
+
+		mDefinition = new GxMapViewDefinition(context, (GridDefinition)definition); // ACA LIMPIA LOS VALORES; no viene lo del grid
+		mSensorManager = (SensorManager)context.getSystemService(SENSOR_SERVICE);
+		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+		onCreate(new Bundle());
+
+		//mSensorManager.registerListener(this,mAccelerometer,	SensorManager.SENSOR_DELAY_GAME);
+		//mSensorManager.registerListener(this,magnetometer,SensorManager.SENSOR_DELAY_GAME);  //SENSOR_STATUS_ACCURACY_LOW);
+
+		mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_UI);
+
+		initialize();
+
+		Log.e("UC:", " REGISTERLISTENER ");
+	}
+
+	private void initialize()
+	{
+		mHelper = new GridHelper(this, mCoordinator, mDefinition.getGrid());
+		mHelper.setReservedSpace(ITEM_VIEW_WIDTH_MARGIN);
+		mAdapter = new GridAdapter(getContext(), mHelper, mDefinition.getGrid());
+		mItemViewHelper = new MapItemViewHelper(this);
+
+		PropertyGridVariableName = mDefinition.getItem().getControlInfo().optStringProperty("@BasicUserControlCodeAtt");
+		PropertyGridVariableName.replace("&", "");   // NO ANDA , no saca el &
+		PropertyApiKey = mDefinition.getItem().getControlInfo().optStringProperty("@BasicUserControlGoogleDirectionApi");
+		PropertyMyLocation = mDefinition.getItem().getControlInfo().optStringProperty("@BasicUserControlmylocation");
+
+
+		getMapAsync(new OnMapReadyCallback()
+		{
+			@Override
+			public void onMapReady(final GoogleMap googleMap) {
+				mMap = googleMap;
+
+				Log.e("UC:", " ON MAP READY");
+				if (mMap == null)
+					Log.e("UC:", " MAP¨IS NULL ");
+
+				mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+					@Override
+					public void onMapLoaded() {
+						Log.e("UC:", " onMapLoaded ");
+
+						if (bounds != null) {
+							mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80), 1000, null);
+
+						}
+					}
+				});
+
+				setMyLocation();
+				makeMapReady();
+			}
+		});
+
+	}
+
+
+	private void makeMapReady()
+	{
+		mIsReady = true;
+		ViewData pendingUpdate = mPendingUpdate;
+		mPendingUpdate = null;
+
+		if (pendingUpdate != null)
+			update(pendingUpdate);
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+
+	}
+
+	@Override
+	public void setProperty(String name, Object value) {
+
+	}
+
+
+	@Override
+	public Object getProperty(String name) {
+		return null;
+	}
+
+	public void runOnTapEvent() {
+		ActionDefinition actionDef = mCoordinator.getControlEventHandler(this, EVENT_ON_TAP);
+
+		for (ActionParameter param : actionDef.getEventParameters()) {
+			String paramName = param.getValueDefinition().getName();
+			mCoordinator.setValue(paramName, tapCount);
+		}
+
+		mCoordinator.runControlEvent(this, EVENT_ON_TAP);
+	}
+
+	private final View.OnClickListener mOnClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			tapCount++;
+			runOnTapEvent();
+		}
+	};
+
+	@Override
+	public String getMapType() {
+		return null;
+	}
+
+	@Override
+	public void setMapType(String type) {
+
+	}
+
+	@Override
+	public void addListener(GridEventsListener listener) {
+
+	}
+
+	void animateCamera(CameraUpdate update)
+	{
+		if (mMap != null)
+		{
+			try
+			{
+				mMap.animateCamera(update);
+				return; // Done!
+			}
+			catch (IllegalStateException e)
+			{
+				// Map is not ready.
+			}
+		}
+
+		mPendingCameraUpdate = update;
+	}
+
+	public static LatLng stringToLatLng2(String str)
+	{
+		Pair<Double, Double> coordinates = GeoFormats.parseGeolocation(str);
+		if (coordinates != null)
+			return new LatLng(coordinates.first, coordinates.second);
+		else
+			return null;
+	}
+
+	////////////////////////////////////////////////////////////////////
+
+	@Override
+	public void update(ViewData data)
+	{
+		Services.Log.debug("mDefinition: " +mDefinition.getItem().toString());
+		Services.Log.debug("cantidad " + data.getCount());
+
+		EntityList dataList = data.getEntities();
+
+		Services.Log.debug("DataList " +dataList.toString());
+
+		endPointLatLong = null;
+		LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+		boolean Inicio = true;
+
+		if (dataList!=null)
+		{
+			for (Entity dato : dataList) {
+				String geolocation = dato.getProperty(PropertyGridVariableName).toString();
+				Log.e("UC:", "dato.tostring " + dato.toString());
+				Log.e("UC:", "dato.todebugstring " + dato.toDebugString());
+				MarkerOptions marker = new MarkerOptions();
+
+				LatLng position = stringToLatLng2(geolocation);
+				if (Inicio) {
+					startPointLatLong = position;
+					marker.icon(BitmapDescriptorFactory.fromResource(R.mipmap.taxidest));Log.e("UC:", "REDMARKER");
+					Inicio = false;
+				}
+				else {
+    				marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.locator));
+   					Log.e("UC:", "PIN HERE ARROW");
+				}
+
+				marker.position(position);
+				builder.include(position);
+
+				if (mMap != null) {
+					mMap.addMarker(marker);
+					Log.e("UC:", "Agrega marker");
+				}
+				else
+					Log.e("UC:", "Mapa is null al agregar marker");
+				endPointLatLong = position;
+				Log.e("UC:", "termina loop :" + position.toString());
+			}
+		}
+
+		bounds = builder.build();
+		startRouting();
+		if (mIsReady)
+		{
+			if (!mOnResumeInvoked)
+			{
+				mOnResumeInvoked = true;
+				onResume();
+			}
+		}
+		else
+			mPendingUpdate = data;
+
+	}
+
+	public void runMethod(String method, List<Object> parameters) {
+		Log.e("UC:"," 1. onrunMethod " );
+		Log.e("UC:",method );
+		Log.e("UC:","routepoint" );
+		if (METHOD_SET_NAME.equals(method)) {
+			try {
+				String startPoint = (String) parameters.get(0);
+				startPointLatLong = new LatLng(Double.valueOf(startPoint.split(",")[1]), Double.valueOf(startPoint.split(",")[2]));
+				Log.e("UC:",startPoint );
+				String endPoint = (String) parameters.get(1);
+				Log.e("UC:",startPoint );
+				endPointLatLong = new LatLng(Double.valueOf(endPoint.split(",")[1]), Double.valueOf(endPoint.split(",")[2]));
+				startRouting();
+			} catch (Exception e) {
+				e.printStackTrace();
+				Log.e("UC:",e.toString() );
+			}
+		}
+	}
+
+	public void startRouting(){
+		Log.e("UC:","2. StartRouting method" );
+		if (mMap != null) {
+			Log.e("UC:","3. Map is not null" );
+			GoogleDirection.withServerKey(PropertyApiKey)
+					.from(startPointLatLong)
+					.to(endPointLatLong)
+					.avoid(AvoidType.FERRIES)
+					.avoid(AvoidType.HIGHWAYS)
+					.execute(new DirectionCallback() {
+						@Override
+						public void onDirectionSuccess(Direction direction, String rawBody) {
+							Log.e("UC:","4. On direction success" );
+							if (direction.isOK()) {
+								Route route = direction.getRouteList().get(0);
+								Log.e("UC:","5. Create polyline" );
+								ArrayList<LatLng> directionPositionList = route.getLegList().get(0).getDirectionPoint();
+								mMap.addPolyline(DirectionConverter.createPolyline(getContext(), directionPositionList, 5, Color.BLUE));
+
+								//setCameraWithCoordinationBounds(route);
+
+							} else {
+								// Do something
+							}
+						}
+
+						@Override
+						public void onDirectionFailure(Throwable throwable) {
+
+						}
+					});
+		} else {
+			Log.d("BasicUserControl","Map is not ready yet.");
+		}
+	}
+
+	@SuppressWarnings({"deprecation", "MissingPermission"}) // Checked by updateFromData()
+	private final Runnable mRunnableEnableMyLocationLayer = new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			Log.e("UC:"," Ejecuta el run de EnabledLocation");
+			mMap.setMyLocationEnabled(true);
+
+		}
+	};
+
+	private void setMyLocation()
+	{
+		Log.e("UC:"," SetMylocation pide permisos");
+		WithPermission.Builder<Void> permisionBuilder;
+		permisionBuilder = new WithPermission.Builder<Void>(ActivityHelper.getCurrentActivity())
+				.needs(GeoLocationAPI.getRequiredPermissions())
+				.setRequestCode(1010)
+				.attachToActivityController()
+				.onSuccess(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						Log.e("UC:"," Busca mi posicion");
+						Location location = LocationHelper.getLastKnownLocation();
+						if (location != null) {
+							mMap.setMyLocationEnabled(true);
+						}
+						else
+							Toast.makeText(getContext(), R.string.GXM_CouldNotGetLocationInformation, Toast.LENGTH_SHORT).show();
+					}
+				})
+				.onFailure(new Runnable() {
+					@Override
+					public void run() {
+						Toast.makeText(getContext(), "No se obtuvieron los permisos.", Toast.LENGTH_SHORT).show();
+					}
+				});
+		permisionBuilder.build().run();
+	}
+
+	public void RoutePoint(String startpoint, String endpoint) {
+		mName = startpoint;
+		//setText(getContext().getString(R.string.welcome_message, name));
+	}
+
+
+	@Override
+	public void onLocationChanged(Location location) {
+		Log.e("UC:"," ONLOCATION CHANGED");
+		/*GeomagneticField field = new GeomagneticField(
+				(float)location.getLatitude(),
+				(float)location.getLongitude(),
+				(float)location.getAltitude(),
+				System.currentTimeMillis()
+		);
+		// getDeclination returns degrees
+		mDeclination = field.getDeclination();
+		*/
+	}
+
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		int Int1 = event.sensor.getType();
+		Log.e("UC:"," ONSENSOR CHANGED: " + Int1);
+		float bearing = (float) Math.round(event.values[0]);
+		if (Math.abs(currentDegree-bearing)>2)
+		{
+			Log.e("UC:"," CAMBIO mas de 2" );
+			updateCamera(bearing);
+			currentDegree = -bearing;
+		}
+		else
+			Log.e("UC:"," NO CAMBIO mas de 2" );
+	}
+
+
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int i) {
+
+	}
+
+	private void updateCamera(float bearing)
+	{
+		Log.e("UC:"," UPDATECAMERA");
+		if (mMap == null) {
+			return;
+		}
+		//ERROR: mMap no es null pero no trae la posicion
+		CameraPosition oldPos = mMap.getCameraPosition();
+		//LatLng Position1 = mMap.getCameraPosition().target;
+		//LatLng Position1 = new LatLng(34.879,56.166);
+		float zoomold = mMap.getMaxZoomLevel();     //.getCameraPosition().zoom;
+		//float zoomold = 12f;
+		CameraPosition pos = CameraPosition.builder(oldPos).bearing(bearing).build();
+		//CameraPosition pos = CameraPosition.builder(oldPos).bearing(bearing).build();
+
+		//Log.e("UC:"," ZOOM: " + zoomold);
+		Log.e("UC:"," OLdPOSITION: " + oldPos.toString()) ;
+		Log.e("UC:"," POSITION: " + pos.toString()) ;
+		//Log.e("UC:"," POSITION1: " + Position1.toString()) ;
+
+		if (mIsAnimatedRunning)
+		{
+			Log.e("UC:"," IS animatedRUnning") ;
+			mMap.stopAnimation();
+			mIsAnimatedRunning = true;
+			mMap.animateCamera(CameraUpdateFactory.newCameraPosition(pos),200,null);
+		}
+		else
+		{
+			Log.e("UC:"," IS NOT animatedRUnning") ;
+			mIsAnimatedRunning = true;
+			mMap.animateCamera(CameraUpdateFactory.newCameraPosition(pos),200,null);
+		}
+
+	}
+}

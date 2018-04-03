@@ -1,0 +1,26 @@
+[
+    {
+        "outputFile": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\googleDirectionLibrary\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-te\\values-te.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 105,
+                    "endColumn": 226,
+                    "endOffset": 327
+                },
+                "from": {
+                    "file": "C:\\Users\\jlarrosa\\.android\\build-cache\\9ed2a7e90e4a2279b835120b46cbc811c88e9c3b\\output\\res\\values-te\\values.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 343,
+                        "endColumn": 226,
+                        "endOffset": 565
+                    }
+                }
+            }
+        ]
+    }
+]

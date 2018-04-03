@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/menusearch" android:title="@string/GX_BtnSearch" />
+	<item android:id="@+id/menufilter" android:title="@string/GXM_Filter" />
+	<item android:id="@+id/preferences" android:title="@string/GXM_Preferences" android:icon="@android:drawable/ic_menu_manage" />
+</menu>

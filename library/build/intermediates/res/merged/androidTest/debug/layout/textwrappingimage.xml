@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout
+	android:id="@+id/linerLayoutMain"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >	
+    
+	<com.artech.controls.GxImageViewStatic
+        android:id="@+id/textImage"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginRight="2dp" />
+      
+	<LinearLayout 
+        android:id="@+id/linearLayoutTexts"
+        android:layout_weight="1.0"
+        android:orientation="vertical" 
+        android:layout_height="fill_parent" 
+        android:layout_width="0dip">
+    
+	    <com.artech.controls.GxTextView
+	        android:id="@+id/textTitle"
+	        android:text=""
+	        android:layout_height="0dip"
+	        android:layout_width="wrap_content"
+	        android:layout_weight="1.0"
+	        android:gravity="top"
+	        android:singleLine="false"  
+	        android:layout_marginTop="1dp"      
+	        />
+	    <com.artech.controls.GxTextView
+	        android:id="@+id/textSubTitle"
+	        android:text=""
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_gravity="bottom"
+	 
+	    />
+        
+       
+	</LinearLayout>
+</LinearLayout>
+ </merge>

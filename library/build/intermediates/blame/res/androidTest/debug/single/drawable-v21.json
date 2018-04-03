@@ -1,0 +1,34 @@
+[
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-v21\\design_password_eye.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\05a081966c6309235e53075984ae063ad6a93bfd\\output\\res\\drawable-v21\\design_password_eye.xml"
+    },
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-v21\\abc_btn_colored_material.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\a7407d7b0764b2257eaffa7ebe57f350126c2c6e\\output\\res\\drawable-v21\\abc_btn_colored_material.xml"
+    },
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-v21\\avd_hide_password.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\05a081966c6309235e53075984ae063ad6a93bfd\\output\\res\\drawable-v21\\avd_hide_password.xml"
+    },
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-v21\\abc_edit_text_material.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\a7407d7b0764b2257eaffa7ebe57f350126c2c6e\\output\\res\\drawable-v21\\abc_edit_text_material.xml"
+    },
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-v21\\abc_action_bar_item_background_material.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\a7407d7b0764b2257eaffa7ebe57f350126c2c6e\\output\\res\\drawable-v21\\abc_action_bar_item_background_material.xml"
+    },
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-v21\\avd_show_password.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\05a081966c6309235e53075984ae063ad6a93bfd\\output\\res\\drawable-v21\\avd_show_password.xml"
+    },
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-v21\\notification_action_background.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\a7407d7b0764b2257eaffa7ebe57f350126c2c6e\\output\\res\\drawable-v21\\notification_action_background.xml"
+    },
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-v21\\design_bottom_navigation_item_background.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\05a081966c6309235e53075984ae063ad6a93bfd\\output\\res\\drawable-v21\\design_bottom_navigation_item_background.xml"
+    }
+]

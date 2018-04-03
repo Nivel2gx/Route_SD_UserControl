@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\release\\menu\\standardmenu.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\994b448ea5267a5434f89a7d5e3368698a959b02\\output\\res\\menu\\standardmenu.xml"
+    },
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\release\\menu\\mainmenu.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\994b448ea5267a5434f89a7d5e3368698a959b02\\output\\res\\menu\\mainmenu.xml"
+    },
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\release\\menu\\standardsearch.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\994b448ea5267a5434f89a7d5e3368698a959b02\\output\\res\\menu\\standardsearch.xml"
+    },
+    {
+        "merged": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\library\\build\\intermediates\\res\\merged\\release\\menu\\menu_web.xml",
+        "source": "C:\\Users\\jlarrosa\\.android\\build-cache\\994b448ea5267a5434f89a7d5e3368698a959b02\\output\\res\\menu\\menu_web.xml"
+    }
+]

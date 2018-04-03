@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="com.example:googleDirectionLibrary-1.0">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.android/build-cache/2b5db863db3b40dc249917506862a72559218458/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/2b5db863db3b40dc249917506862a72559218458/output/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://C:/Genexus/Salto/Android/MavenRepositories/thirdpartiesRepository/com/example/googleDirectionLibrary/1.0/googleDirectionLibrary-1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

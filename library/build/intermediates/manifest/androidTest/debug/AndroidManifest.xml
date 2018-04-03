@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.genexusmodule.test" >
+
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="26" />
+
+    <instrumentation
+        android:name="android.test.InstrumentationTestRunner"
+        android:functionalTest="false"
+        android:handleProfiling="false"
+        android:label="Tests for com.example.genexusmodule.test"
+        android:targetPackage="com.example.genexusmodule.test" />
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" /> <!-- OpenGL 2.0 -->
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="22" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Permissions required for GCM -->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <application
+        android:icon="@drawable/appicon"
+        android:label="@string/app_name" >
+        <uses-library android:name="android.test.runner" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/GoogleServicesApiKey" />
+
+        <activity
+            android:name="com.artech.activities.GenexusActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value="com.artech.activities.SearchStubActivity" />
+        </activity>
+        <activity
+            android:name="com.artech.activities.SearchStubActivity"
+            android:exported="false" >
+
+            <!-- Receives search requests. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity
+            android:name="com.artech.activities.dashboard.DashboardActivity"
+            android:label="@string/app_name" />
+        <activity android:name="com.artech.activities.BTDeviceList" />
+        <activity
+            android:name="com.artech.activities.WebViewActivity"
+            android:label="@string/GXM_Loading" >
+        </activity>
+        <activity
+            android:name="com.artech.activities.VideoViewActivity"
+            android:label="@string/GXM_Loading" >
+        </activity>
+        <activity
+            android:name="com.artech.application.Preferences"
+            android:label="@string/GXM_Preferences" >
+        </activity>
+        <activity
+            android:name="com.artech.activities.FiltersActivity"
+            android:label="@string/GXM_Filter" >
+        </activity>
+        <activity
+            android:name="com.artech.activities.DetailFiltersActivity"
+            android:label="@string/GXM_Filter" >
+        </activity>
+        <activity android:name="com.artech.activities.SearchResultsActivity" >
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchablebox" />
+        </activity>
+        <activity android:name="com.artech.controls.maps.googlev2.LocationPickerActivity" />
+        <activity
+            android:name="com.artech.android.gam.AuthManagementActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity android:name="com.artech.android.gam.AuthRedirectActivity" >
+
+            <!--
+            Generated in app's AndroidManifest.xml
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="${appAuthRedirectScheme}"/>
+            </intent-filter>
+            -->
+        </activity>
+
+        <receiver android:name="com.artech.android.notification.NotificationAlarm" />
+        <receiver android:name="com.artech.android.api.LocationFusedProviderReceiver" />
+
+        <provider
+            android:name="com.artech.android.content.CustomFileProvider"
+            android:authorities="com.example.genexusmodule.test.file_provider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/shared_files" />
+        </provider>
+
+        <meta-data
+            android:name="android.support.VERSION"
+            android:value="25.4.0" />
+
+        <provider
+            android:name="com.squareup.picasso.PicassoProvider"
+            android:authorities="com.example.genexusmodule.test.com.squareup.picasso"
+            android:exported="false" />
+
+        <activity
+            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+    </application>
+
+</manifest>

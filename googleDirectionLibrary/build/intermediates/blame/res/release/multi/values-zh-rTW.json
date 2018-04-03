@@ -1,0 +1,26 @@
+[
+    {
+        "outputFile": "C:\\Proyectos\\ProyAndroidStudio\\SampleModule\\SampleModule\\googleDirectionLibrary\\build\\intermediates\\incremental\\mergeReleaseResources\\merged.dir\\values-zh-rTW\\values-zh-rTW.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 105,
+                    "endColumn": 181,
+                    "endOffset": 282
+                },
+                "from": {
+                    "file": "C:\\Users\\jlarrosa\\.android\\build-cache\\9ed2a7e90e4a2279b835120b46cbc811c88e9c3b\\output\\res\\values-zh-rTW\\values.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 347,
+                        "endColumn": 181,
+                        "endOffset": 524
+                    }
+                }
+            }
+        ]
+    }
+]

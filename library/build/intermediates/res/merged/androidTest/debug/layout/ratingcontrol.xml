@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<LinearLayout android:id="@+id/layoutRatingBar"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal" >
+
+	    <LinearLayout android:id="@+id/layoutPreRatingBar"
+	    android:layout_width="15dip"
+	    android:layout_height="wrap_content"
+	    android:visibility="gone"
+	    android:orientation="vertical" >
+	    </LinearLayout>
+	        
+	    <RatingBar android:id="@+id/ratingbar"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:numStars="5"
+	        android:stepSize="1.0"/>
+	    
+	    <RatingBar android:id="@+id/smallratingbar"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:numStars="5"
+	        android:stepSize="1.0"
+	        android:visibility="gone"
+	        style="?android:attr/ratingBarStyleSmall"/>
+	
+	    <com.artech.controls.GxRatingView 
+			android:id="@+id/gxRatingbarView"
+			android:layout_marginLeft="1dip"
+			android:layout_marginRight="1dip"
+			android:listSelector="@android:color/transparent"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:gravity="center"/>
+ 
+	    <LinearLayout android:id="@+id/layoutPostRatingBar"
+	    android:layout_width="5dip"
+	    android:layout_height="wrap_content"
+	    android:visibility="gone"
+	    android:orientation="vertical" >
+	    </LinearLayout>
+	        
+	</LinearLayout>
+ </merge>

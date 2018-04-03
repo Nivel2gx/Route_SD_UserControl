@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditText android:id="@+id/scannerEdit" android:layout_height="fill_parent" android:layout_width="fill_parent" android:text=""  
+        android:inputType="text" ></EditText>
+ 	<Button android:id="@+id/scannerButton" android:layout_height="fill_parent" android:layout_width="wrap_content" android:text="@string/GXM_Scan" ></Button>
+</merge>

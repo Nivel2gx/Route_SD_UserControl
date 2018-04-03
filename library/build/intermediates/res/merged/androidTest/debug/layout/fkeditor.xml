@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="horizontal"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:baselineAligned="false"
+  >
+  
+	<LinearLayout 
+    	android:id="@+id/itemEditor"
+        android:layout_height="wrap_content" android:layout_width="fill_parent"
+        android:layout_weight="1">
+    </LinearLayout>           
+             
+    <LinearLayout 
+        android:id="@+id/fkButton"
+        android:layout_gravity="right" android:gravity="right" 
+        android:layout_height="wrap_content" android:layout_width="wrap_content"
+        android:layout_weight="0">
+    </LinearLayout>  
+</LinearLayout>
