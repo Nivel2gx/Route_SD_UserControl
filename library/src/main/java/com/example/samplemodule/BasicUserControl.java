@@ -60,12 +60,19 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+//import com.android.volley.Request;
+//import com.android.volley.RequestQueue;
+//import com.android.volley.Response;
+//import com.android.volley.VolleyError;
+//import com.android.volley.toolbox.JsonObjectRequest;
+//import com.android.volley.toolbox.Volley;
+
 import static android.content.Context.SENSOR_SERVICE;
 //import android.provider.Settings;
 
 @SuppressLint("ViewConstructor")
-public class BasicUserControl extends MapView implements IGxControlRuntime, IGxMapView, SensorEventListener,LocationListener, GoogleMap.CancelableCallback {
-
+public class BasicUserControl extends MapView implements IGxControlRuntime, IGxMapView,
+		SensorEventListener,LocationListener, GoogleMap.CancelableCallback {
 
 	final static String NAME = "BasicUserControl";
 	private final static String METHOD_SET_NAME = "routepoint";
@@ -79,8 +86,6 @@ public class BasicUserControl extends MapView implements IGxControlRuntime, IGxM
 	//private final LayoutItemDefinition mDefinition;
 
 	private final SensorManager mSensorManager;
-	private final Sensor mAccelerometer;
-	private final Sensor magnetometer;
 
 	private boolean mIsReady;
 	private boolean mOnResumeInvoked;
@@ -111,10 +116,12 @@ public class BasicUserControl extends MapView implements IGxControlRuntime, IGxM
 
 	LatLng startPointLatLong;
 	LatLng endPointLatLong;
+	LatLng  myLocation;
 	private String PropertyGridVariableName;
 	String PropertyApiKey;
-	String PropertyMyLocation;
+	Boolean PropertyMyLocation;
 	Boolean PropertyAutoRotate;
+	Boolean PropertyDirectionLayer;
 
 	private final static int ITEM_VIEW_WIDTH_MARGIN = 20; // dips
 	private final static int MARKER_CAMERA_ANIMATION_DURATION = 500; // ms
@@ -126,20 +133,13 @@ public class BasicUserControl extends MapView implements IGxControlRuntime, IGxM
 		Log.e("UC:", " Antes que nada");
 		mCoordinator = coordinator;
 
-		mDefinition = new GxMapViewDefinition(context, (GridDefinition) definition); // ACA LIMPIA LOS VALORES; no viene lo del grid
+		mDefinition = new GxMapViewDefinition(context, (GridDefinition) definition);
 		mSensorManager = (SensorManager) context.getSystemService(SENSOR_SERVICE);
-		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
 		onCreate(new Bundle());
 
-		//mSensorManager.registerListener(this,mAccelerometer,	SensorManager.SENSOR_DELAY_GAME);
-		//mSensorManager.registerListener(this,magnetometer,SensorManager.SENSOR_DELAY_GAME);  //SENSOR_STATUS_ACCURACY_LOW);
-		mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_UI);
-
-		initialize();
-
 		Log.e("UC:", " REGISTERLISTENER ");
+		initialize();
 	}
 
 	private void initialize() {
@@ -151,15 +151,12 @@ public class BasicUserControl extends MapView implements IGxControlRuntime, IGxM
 		PropertyGridVariableName = mDefinition.getItem().getControlInfo().optStringProperty("@BasicUserControlCodeAtt");
 		PropertyGridVariableName.replace("&", "");   // NO ANDA , no saca el &
 		PropertyApiKey = mDefinition.getItem().getControlInfo().optStringProperty("@BasicUserControlGoogleDirectionApi");
-		PropertyMyLocation = mDefinition.getItem().getControlInfo().optStringProperty("@BasicUserControlmylocation");
+		PropertyMyLocation = mDefinition.getItem().getControlInfo().optBooleanProperty("@BasicUserControlmylocation");
 		PropertyAutoRotate = mDefinition.getItem().getControlInfo().optBooleanProperty("@BasicUserControlAutoRotate");
+		PropertyDirectionLayer = mDefinition.getItem().getControlInfo().optBooleanProperty("@BasicUserControlDirectionLayer");
 
 		getMapAsync(new OnMapReadyCallback() {
 
-		//	Log.e("UC:", " ON MAP READY");
-		//	LatLng MVD = new LatLng(-34.8800126,-56.0865618);
-		//	CameraPosition pos = CameraPosition.builder().target(MVD).zoom(10f).build();
-		//	GoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(pos), 1000, null);
 
 			@Override
 			public void onMapReady(final GoogleMap googleMap) {
@@ -168,11 +165,11 @@ public class BasicUserControl extends MapView implements IGxControlRuntime, IGxM
 				Log.e("UC:", " ON MAP READY");
 				LatLng MVD = new LatLng(-34.8800126,-56.0865618);
 				CameraPosition pos = CameraPosition.builder().target(MVD).zoom(10f).build();
-				//mMap.addMarker(new MarkerOptions().position(MVD).title("Marker in Montevideo"));
 				mMap.animateCamera(CameraUpdateFactory.newCameraPosition(pos), 1000, null);
 
 				if (mMap == null)
 					Log.e("UC:", " MAP¨IS NULL ");
+				getMyLocation();
 
 				mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
 					@Override
@@ -180,18 +177,56 @@ public class BasicUserControl extends MapView implements IGxControlRuntime, IGxM
 						Log.e("UC:", " onMapLoaded ");
 
 						if (bounds != null) {
-							mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80), 1000, null);
+							updateBound();
 						}
 					}
 				});
 
-				setMyLocation();
+				if(PropertyMyLocation)
+				     setMyLocation();
+
+				if(PropertyAutoRotate)
+					startAutoRotate();
+
 				makeMapReady();
 			}
 		});
 
 	}
 
+	private void updateMyLocation(){
+		mMap.setOnMyLocationChangeListener(new GxMapOnMyLocationChangeListener());
+	}
+
+	private class GxMapOnMyLocationChangeListener implements GoogleMap.OnMyLocationChangeListener
+	{
+		Marker mPositionMarker;
+		//BitmapDescriptor mBitmapDescriptor;
+
+		@Override
+		public void onMyLocationChange(Location location)
+		{
+			if (location != null){
+				myLocation = stringToLatLng2(location.getLatitude() + "," + location.getLongitude());
+				//Log.e(TAG, "MyLocation: " + myLocation);
+			}else{
+				return;
+			}
+		}
+	}
+
+	private void updateBound(){
+		bounds.including(myLocation);
+		mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80), 1000, null);
+	}
+	private void startAutoRotate(){
+		mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_UI);
+	}
+
+	 /// Para la navegación, deja de utilizar los sensores.
+	private void stopAutoRotate(){
+		mSensorManager.unregisterListener(this);
+	}
 
 	private void makeMapReady() {
 		mIsReady = true;
@@ -309,18 +344,22 @@ public class BasicUserControl extends MapView implements IGxControlRuntime, IGxM
 
 				if (mMap != null) {
 					mMap.addMarker(marker);
-
 				}
 				endPointLatLong = position;
 			}
 		}
 
 		bounds = builder.build();
-		startRouting();
+
 		if (mIsReady) {
 			if (!mOnResumeInvoked) {
 				mOnResumeInvoked = true;
-				onResume();
+
+				if (PropertyDirectionLayer)
+					//startRouting(startPointLatLong, endPointLatLong);
+					startRouting();
+
+					onResume();
 			}
 		} else {
 			mPendingUpdate = data;
@@ -373,9 +412,7 @@ public class BasicUserControl extends MapView implements IGxControlRuntime, IGxM
 								Log.e("UC:", "5. Create polyline");
 								ArrayList<LatLng> directionPositionList = route.getLegList().get(0).getDirectionPoint();
 								mMap.addPolyline(DirectionConverter.createPolyline(getContext(), directionPositionList, 5, Color.BLUE));
-
 								//setCameraWithCoordinationBounds(route);
-
 							} else {
 								// Do something
 							}
@@ -401,7 +438,7 @@ public class BasicUserControl extends MapView implements IGxControlRuntime, IGxM
 		}
 	};
 
-	private void setMyLocation() {
+	private void getMyLocation() {
 		Log.e("UC:", " SetMylocation pide permisos");
 		WithPermission.Builder<Void> permisionBuilder;
 		permisionBuilder = new WithPermission.Builder<Void>(ActivityHelper.getCurrentActivity())
@@ -414,7 +451,7 @@ public class BasicUserControl extends MapView implements IGxControlRuntime, IGxM
 						Log.e("UC:", " Busca mi posicion");
 						Location location = LocationHelper.getLastKnownLocation();
 						if (location != null) {
-							mMap.setMyLocationEnabled(true);
+							myLocation = stringToLatLng2(location.getLatitude() + "," + location.getLongitude());
 						} else
 							Toast.makeText(getContext(), R.string.GXM_CouldNotGetLocationInformation, Toast.LENGTH_SHORT).show();
 					}
@@ -426,6 +463,13 @@ public class BasicUserControl extends MapView implements IGxControlRuntime, IGxM
 					}
 				});
 		permisionBuilder.build().run();
+	}
+
+
+	@SuppressLint("MissingPermission")
+	private void setMyLocation(){
+		if(PropertyMyLocation)
+			mMap.setMyLocationEnabled(true);
 	}
 
 	public void RoutePoint(String startpoint, String endpoint) {
@@ -444,12 +488,13 @@ public class BasicUserControl extends MapView implements IGxControlRuntime, IGxM
 		if (PropertyAutoRotate)
 		{
 			float bearing = (float) Math.round(event.values[0]);
-			if (Math.abs(currentDegree - bearing) > 2) {
-				Log.e("UC:", " CAMBIO mas de 2");
+			Log.d("onSensorChanged", "Heading: " + Float.toString(bearing) + " degrees");
+			if (Math.abs(currentDegree - bearing) > 4) {
+				Log.e("UC:", " CAMBIO mas de 4");
 				updateCamera(bearing);
 				currentDegree = bearing; //-bearing;
-			} else
-				Log.e("UC:", " NO CAMBIO mas de 2");
+			} //else
+				//Log.e("UC:", " NO CAMBIO mas de 4");
 		}
 
 	}
